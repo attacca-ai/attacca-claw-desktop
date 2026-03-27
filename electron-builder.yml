@@ -1,0 +1,102 @@
+appId: com.attaccaclaw.app
+productName: AttaccaClaw
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!spec/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  # Strip type declarations, source maps, and documentation from node_modules
+  - '!**/*.d.ts'
+  - '!**/*.d.ts.map'
+  - '!**/*.js.map'
+  - '!**/*.css.map'
+  - '!**/README'
+  - '!**/README.md'
+  - '!**/CHANGELOG'
+  - '!**/CHANGELOG.md'
+  - '!**/HISTORY.md'
+  - '!**/LICENSE'
+  - '!**/LICENSE.md'
+  - '!**/LICENSE.txt'
+  - '!**/.eslintrc*'
+  - '!**/.prettierrc*'
+  - '!**/.editorconfig'
+  - '!**/tsconfig.json'
+  - '!**/.npmignore'
+  - '!**/.gitattributes'
+  - '!**/.openapi-generator/**'
+  - '!**/docs/**'
+  - '!**/test/**'
+  - '!**/tests/**'
+  - '!**/__tests__/**'
+  - '!**/examples/**'
+asarUnpack:
+  - resources/**
+extraResources:
+  - from: node_modules/openclaw
+    to: openclaw
+    filter:
+      - '**/*'
+  - from: models/all-MiniLM-L6-v2
+    to: models/all-MiniLM-L6-v2
+    filter:
+      - '**/*'
+win:
+  executableName: AttaccaClaw
+  icon: resources/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  artifactName: AttaccaClaw-${version}-setup.${ext}
+  shortcutName: AttaccaClaw
+  uninstallDisplayName: AttaccaClaw
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeader: build/installerHeader.bmp
+  installerHeaderIcon: build/icon.ico
+  installerSidebar: build/installerSidebar.bmp
+  uninstallerSidebar: build/installerSidebar.bmp
+  include: build/installer.nsh
+mac:
+  icon: resources/icon.icns
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+linux:
+  icon: resources/icon.png
+  target:
+    - target: AppImage
+      arch:
+        - x64
+npmRebuild: true
+afterPack: scripts/fix-openclaw-deps.js
+afterSign: scripts/notarize.js

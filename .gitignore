@@ -1,0 +1,29 @@
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+*.tsbuildinfo
+connection/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# User data (never commit)
+user-identity.json
+composio-key.enc
+license.enc
+onboarding.json
+telemetry-opt-in.json
+telemetry-queue.json
+attacca-kb/
+attacca-memory/
+
+# Design explorations & internal docs
+redesign/
+documentos guia/
+docs/
+.github/workflows/
