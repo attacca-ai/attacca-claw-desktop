@@ -232,10 +232,18 @@ function stripDir(dir) {
 }
 
 exports.default = async function afterPack(context) {
-  const { appOutDir } = context
+  const { appOutDir, electronPlatformName, packager } = context
   const projectRoot = path.resolve(__dirname, '..')
   const srcOpenclaw = path.join(projectRoot, 'node_modules', 'openclaw')
-  const destOpenclaw = path.join(appOutDir, 'resources', 'openclaw')
+
+  // macOS resources are inside the .app bundle, other platforms use appOutDir/resources
+  let destOpenclaw
+  if (electronPlatformName === 'darwin') {
+    const appName = packager.appInfo.productFilename
+    destOpenclaw = path.join(appOutDir, `${appName}.app`, 'Contents', 'Resources', 'openclaw')
+  } else {
+    destOpenclaw = path.join(appOutDir, 'resources', 'openclaw')
+  }
 
   if (!fs.existsSync(destOpenclaw)) {
     console.log('[fix-openclaw-deps] openclaw not in resources — skipping')
