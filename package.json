@@ -17,6 +17,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test e2e/",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "node scripts/dev.js",
@@ -77,6 +78,7 @@
     "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.6",
+    "@playwright/test": "^1.52.0",
     "vitest": "^4.0.18"
   }
 }
