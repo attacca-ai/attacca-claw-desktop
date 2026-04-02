@@ -9,13 +9,15 @@ const mockOnStateChange = vi.fn().mockReturnValue(vi.fn())
 const mockConnect = vi.fn()
 const mockDisconnect = vi.fn()
 const mockGetState = vi.fn().mockReturnValue('disconnected')
+const mockSetToken = vi.fn()
 
 vi.mock('@/lib/gateway-client', () => ({
   gatewayClient: {
     onStateChange: (...args: unknown[]) => mockOnStateChange(...args),
     connect: (...args: unknown[]) => mockConnect(...args),
     disconnect: (...args: unknown[]) => mockDisconnect(...args),
-    getState: (...args: unknown[]) => mockGetState(...args)
+    getState: (...args: unknown[]) => mockGetState(...args),
+    setToken: (...args: unknown[]) => mockSetToken(...args)
   }
 }))
 
@@ -87,7 +89,7 @@ describe('useGateway', () => {
     expect(mockConnect).not.toHaveBeenCalled()
   })
 
-  it('auto-connects when onStateChanged reports running', () => {
+  it('auto-connects when onStateChanged reports running', async () => {
     mockGetState.mockReturnValue('disconnected')
 
     // Capture the callback passed to onStateChanged
@@ -108,7 +110,10 @@ describe('useGateway', () => {
       startedAt: Date.now()
     })
 
-    expect(mockConnect).toHaveBeenCalled()
+    // Wait for async getToken() to resolve before connect is called
+    await vi.waitFor(() => {
+      expect(mockConnect).toHaveBeenCalled()
+    })
   })
 
   it('cleans up subscriptions and disconnects on unmount', () => {
