@@ -15,9 +15,14 @@ export function useGateway(): void {
     // Listen for process state changes from main process
     const unsubProcess = window.api.gateway.onStateChanged((state) => {
       setProcessState(state)
-      // Auto-connect when gateway is running
+      // Auto-connect when gateway is running — re-fetch token first since
+      // the gateway may have generated a new one on restart
       if (state.state === 'running' && gatewayClient.getState() === 'disconnected') {
-        gatewayClient.connect()
+        window.api.gateway.getToken().then((tokenResult) => {
+          const token = (tokenResult as { token: string | null })?.token
+          if (token) gatewayClient.setToken(token)
+          gatewayClient.connect()
+        })
       }
     })
 
