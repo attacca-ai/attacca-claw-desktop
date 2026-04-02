@@ -141,6 +141,10 @@ export async function startGateway(): Promise<void> {
 
   // Inject LLM API key into gateway env so OpenClaw can find it
   const gatewayEnv: NodeJS.ProcessEnv = { ...process.env }
+  // In production, use Electron's bundled Node.js instead of system 'node'
+  if (app.isPackaged) {
+    gatewayEnv.ELECTRON_RUN_AS_NODE = '1'
+  }
   if (config.llm?.apiKey) {
     const provider = config.llm.provider
     if (provider === 'anthropic') gatewayEnv.ANTHROPIC_API_KEY = config.llm.apiKey
@@ -151,11 +155,12 @@ export async function startGateway(): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
       const openclawMjs = resolveOpenClawMjs()
-      logToFile(`Spawning: node ${openclawMjs} gateway --port ${config.gateway.port}`)
+      const nodeCmd = app.isPackaged ? process.execPath : 'node'
+      logToFile(`Spawning: ${nodeCmd} ${openclawMjs} gateway --port ${config.gateway.port}`)
       logToFile(`File exists: ${existsSync(openclawMjs)}`)
       logToFile(`isPackaged: ${app.isPackaged}, resourcesPath: ${process.resourcesPath}`)
       gatewayProcess = spawn(
-        'node',
+        nodeCmd,
         [openclawMjs, 'gateway', '--port', String(config.gateway.port)],
         {
           stdio: ['ignore', 'pipe', 'pipe'],
